@@ -1,0 +1,38 @@
+{
+  "name": "@hjaerna/bot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development tsx watch ./src/index.ts",
+    "start": "node ./dist/index.js",
+    "build": "tsc",
+    "lint": "npx @biomejs/biome check *.ts listeners tests",
+    "lint:fix": "npx @biomejs/biome check --write *.ts listeners tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.0",
+  "dependencies": {
+    "@chroma-core/default-embed": "^0.1.9",
+    "@google/genai": "^1.37.0",
+    "@sindresorhus/slugify": "^3.0.0",
+    "@slack/bolt": "^4.6.0",
+    "@types/fs-extra": "^11.0.4",
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
+    "chromadb": "^3.2.2",
+    "dayjs": "^1.11.19",
+    "dotenv": "^17.2.3",
+    "fs-extra": "^11.3.3",
+    "youtube-transcript": "^1.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.11",
+    "@types/node": "^25.0.9",
+    "cross-env": "^10.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

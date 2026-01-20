@@ -1,0 +1,61 @@
+services:
+  # 1. Dein Bot (Der Controller)
+  brain-bot:
+    container_name: brain-bot
+    build:
+      context: .
+      dockerfile: ./apps/bot/Containerfile
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    depends_on:
+      - chroma
+    environment:
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - CHROMA_URL=http://chroma:8000
+    volumes:
+      - ./data/brain-data:/app/brain-data
+
+  # 2. Vektor-Datenbank (Für die Ähnlichkeitssuche)
+  chroma:
+    image: chromadb/chroma
+    container_name: brain-chroma
+    ports:
+      - 8000:8000
+    volumes:
+      - ./data/chroma:/chroma/chroma
+
+  # 3. Syncthing (Sync zu Handy/Laptop)
+  syncthing:
+    image: syncthing/syncthing
+    container_name: brain-syncthing
+    hostname: brain-vps
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - ./data:/var/syncthing/BrainData
+      - ./syncthing-config:/var/syncthing/config
+    ports:
+      - 8384:8384
+      - 22000:22000/tcp
+      - 22000:22000/udp
+      - 21027:21027/udp
+    restart: unless-stopped
+
+  # 4. Deine Web-Oberfläche (Next.js)
+  # Diesen Container baust du, wenn die Webapp fertig ist
+  # brain-web:
+  #   build: ./webapp
+  #   restart: unless-stopped
+  #   ports:
+  #     - 3000:3000
+  #   depends_on:
+  #     - chroma
+  #   volumes:
+  #     - ./data:/app/brain-data:ro # Read-only Zugriff auf Markdown
+  #   environment:
+  #     - CHROMA_URL=http://chroma:8000
+  #     - GEMINI_API_KEY=${GEMINI_API_KEY}
