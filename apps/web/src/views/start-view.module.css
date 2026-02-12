@@ -1,5 +1,16 @@
-.container {
-	padding: 80px;
-	background-color: rgba(0, 0, 0, 0.6);
-	border-radius: 12px;
+.appName {
+	/* text-shadow: 0px 0px 20px rgba(255, 255, 255, 1); */
+	/* background-color: rgba(0, 0, 0, 0.2); */
+	/* border-radius: 12px; */
+}
+
+.icon {
+	width: 180px;
+	height: 180px;
+	/* box-shadow: 0px 0px 40px rgba(255, 255, 255, 1); */
+
+	@media (max-width: $mantine-breakpoint-sm) {
+		width: 80px;
+    height: 80px;
+  }
 }

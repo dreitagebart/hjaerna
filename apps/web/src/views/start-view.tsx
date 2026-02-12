@@ -3,6 +3,7 @@
 import {
 	Button,
 	Center,
+	darken,
 	Flex,
 	Group,
 	Stack,
@@ -26,11 +27,11 @@ export const StartView = () => {
 
 	return (
 		<LightPillar
-			topColor={theme.colors.mauve[0]}
+			topColor={theme.colors.lavender[0]}
 			bottomColor={theme.colors.green[0]}
 			intensity={1}
 			rotationSpeed={0.3}
-			glowAmount={0.002}
+			glowAmount={0.0005}
 			pillarWidth={2}
 			pillarHeight={0.4}
 			noiseIntensity={0.5}
@@ -52,30 +53,23 @@ export const StartView = () => {
 				}}
 			>
 				<Center c='white'>
-					<Stack align='center' gap={0} className={classes.container}>
-						<IconBrain
-							size={fontSize + 100}
-							style={{
-								boxShadow: '0px 0px 40px rgba(255, 255, 255, 1)'
-							}}
-						/>
+					<Stack align='center' gap={0}>
+						<IconBrain className={classes.icon} />
 						<Text
-							style={{
-								textShadow: '0px 0px 20px rgba(255, 255, 255, 1)'
-							}}
+							className={classes.appName}
 							fz={fontSize}
-							variant='gradient'
-							gradient={{
-								deg: 90,
-								from: theme.colors.mauve[0],
-								to: theme.colors.green[0]
-							}}
+							// variant='gradient'
+							// gradient={{
+							// 	deg: 90,
+							// 	from: theme.colors.green[0],
+							// 	to: theme.colors.lavender[0]
+							// }}
 						>
 							hjaerna
 						</Text>
 						<Slogan />
 						<Group mt='xl'>
-							<Button size='lg' component={Link} href='/brain'>
+							<Button variant='white' size='lg' component={Link} href='/brain'>
 								check my brain
 							</Button>
 						</Group>

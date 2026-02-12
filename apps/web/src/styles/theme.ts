@@ -4,7 +4,7 @@ import { colors } from './colors'
 import { sansSerifFont } from './fonts'
 
 export const theme = createTheme({
-	primaryColor: 'mauve',
+	primaryColor: 'lavender',
 	colors,
 	fontFamily: sansSerifFont.style.fontFamily,
 	headings: {
