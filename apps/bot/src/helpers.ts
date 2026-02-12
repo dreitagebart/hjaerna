@@ -79,5 +79,7 @@ export const saveToVectorDb = async (
 }
 
 export const sanitizeFilename = (name: string) => {
-	return slugify(name)
+	return name
+
+	// return slugify(name)
 }

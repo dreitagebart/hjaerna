@@ -37,17 +37,17 @@ COPY --from=builder /app/apps/web/public ./apps/web/public
 
 EXPOSE 3000
 ENV PORT=3000
-ENV HOSTNAME="0.0.0.0"
+# ENV HOSTNAME="0.0.0.0"
 
 CMD ["node", "apps/web/server.js"]
 
-# Development stage - runs with next dev
-FROM base AS development
-ENV NODE_ENV=development
-WORKDIR /app
-COPY --from=installer /app/ .
-COPY --from=pruner /app/out/full/ .
-WORKDIR /app/apps/web
+# # Development stage - runs with next dev
+# FROM base AS development
+# ENV NODE_ENV=development
+# WORKDIR /app
+# COPY --from=installer /app/ .
+# COPY --from=pruner /app/out/full/ .
+# WORKDIR /app/apps/web
 
-EXPOSE 3000
-CMD ["pnpm", "dev"]
+# EXPOSE 3000
+# CMD ["pnpm", "dev"]

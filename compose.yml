@@ -1,61 +1,108 @@
 services:
-  # 1. Dein Bot (Der Controller)
-  brain-bot:
-    container_name: brain-bot
+  volume-init:
+    image: alpine:latest
+    container_name: hjaerna-volume-init
+    volumes:
+      - hjaerna-data:/data
+    command: >
+      sh -c "chown -R 1001:1001 /data &&
+             chmod -R 755 /data &&
+             echo 'Volume permissions initialized successfully'"
+    networks:
+      - traefik
+
+  bot:
+    container_name: hjaerna-bot
     build:
       context: .
       dockerfile: ./apps/bot/Containerfile
-    ports:
-      - 3000:3000
-    restart: unless-stopped
     depends_on:
-      - chroma
+      volume-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
     environment:
       - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN}
       - SLACK_APP_TOKEN=${SLACK_APP_TOKEN}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - CHROMA_URL=http://chroma:8000
     volumes:
-      - ./data/brain-data:/app/brain-data
+      - hjaerna-data:/app/data
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hjaerna-bot.entrypoints=http
+      - traefik.http.routers.hjaerna-bot.rule=Host(`bot.dreitagebart.io`)
+      - traefik.http.services.hjaerna-bot.loadbalancer.server.port=3000
+      - traefik.http.routers.hjaerna-bot.middlewares=traefik-https-redirect
+      - traefik.http.routers.hjaerna-bot-secure.entrypoints=https
+      - traefik.http.routers.hjaerna-bot-secure.rule=Host(`bot.dreitagebart.io`)
+      - traefik.http.routers.hjaerna-bot-secure.tls=true
+      - traefik.http.routers.hjaerna-bot-secure.tls.certresolver=cloudflare
+      - traefik.http.routers.hjaerna-bot-secure.service=hjaerna-bot
 
-  # 2. Vektor-Datenbank (Für die Ähnlichkeitssuche)
-  chroma:
-    image: chromadb/chroma
-    container_name: brain-chroma
-    ports:
-      - 8000:8000
+  web:
+    container_name: hjaerna-web
+    build:
+      context: .
+      dockerfile: ./apps/web/Containerfile
+    restart: unless-stopped
     volumes:
-      - ./data/chroma:/chroma/chroma
+      - hjaerna-data:/app/apps/web/public/data:ro
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hjaerna-web.entrypoints=http
+      - traefik.http.routers.hjaerna-web.rule=Host(`brain.dreitagebart.io`)
+      - traefik.http.services.hjaerna-web.loadbalancer.server.port=3000
+      - traefik.http.routers.hjaerna-web.middlewares=traefik-https-redirect
+      - traefik.http.routers.hjaerna-web-secure.entrypoints=https
+      - traefik.http.routers.hjaerna-web-secure.rule=Host(`brain.dreitagebart.io`)
+      - traefik.http.routers.hjaerna-web-secure.tls=true
+      - traefik.http.routers.hjaerna-web-secure.tls.certresolver=cloudflare
+      - traefik.http.routers.hjaerna-web-secure.service=hjaerna-web
 
-  # 3. Syncthing (Sync zu Handy/Laptop)
-  syncthing:
-    image: syncthing/syncthing
-    container_name: brain-syncthing
-    hostname: brain-vps
+  sync:
+    image: syncthing/syncthing:2.0.13
+    container_name: hjaerna-sync
+    hostname: hjaerna
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
     environment:
-      - PUID=1000
-      - PGID=1000
+      - PUID=1001
+      - PGID=1001
     volumes:
-      - ./data:/var/syncthing/BrainData
-      - ./syncthing-config:/var/syncthing/config
+      - hjaerna-data:/var/syncthing/data
+      # - ./config:/var/syncthing/config
     ports:
-      - 8384:8384
+      # - 8384:8384
       - 22000:22000/tcp
       - 22000:22000/udp
-      - 21027:21027/udp
+      # - 21027:21027/udp
+    cap_add:
+      - CHOWN
+      - FOWNER
     restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hjaerna-sync.entrypoints=http
+      - traefik.http.routers.hjaerna-sync.rule=Host(`sync.dreitagebart.io`)
+      - traefik.http.services.hjaerna-sync.loadbalancer.server.port=8384
+      - traefik.http.routers.hjaerna-sync.middlewares=traefik-https-redirect
+      - traefik.http.routers.hjaerna-sync-secure.entrypoints=https
+      - traefik.http.routers.hjaerna-sync-secure.rule=Host(`sync.dreitagebart.io`)
+      - traefik.http.routers.hjaerna-sync-secure.tls=true
+      - traefik.http.routers.hjaerna-sync-secure.tls.certresolver=cloudflare
+      - traefik.http.routers.hjaerna-sync-secure.service=hjaerna-sync
 
-  # 4. Deine Web-Oberfläche (Next.js)
-  # Diesen Container baust du, wenn die Webapp fertig ist
-  # brain-web:
-  #   build: ./webapp
-  #   restart: unless-stopped
-  #   ports:
-  #     - 3000:3000
-  #   depends_on:
-  #     - chroma
-  #   volumes:
-  #     - ./data:/app/brain-data:ro # Read-only Zugriff auf Markdown
-  #   environment:
-  #     - CHROMA_URL=http://chroma:8000
-  #     - GEMINI_API_KEY=${GEMINI_API_KEY}
+
+networks:
+  traefik:
+    external: true
+
+volumes:
+  hjaerna-data:
+    external: true

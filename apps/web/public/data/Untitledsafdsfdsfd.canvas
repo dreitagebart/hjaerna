@@ -1,0 +1,7 @@
+{
+	"nodes":[
+		{"id":"5fde3073ed63054e","type":"file","file":"Welcome.md","x":40,"y":-280,"width":400,"height":400},
+		{"id":"63b3931ecfc9dce2","type":"text","text":"sdfdsf","x":-125,"y":-340,"width":250,"height":370}
+	],
+	"edges":[]
+}

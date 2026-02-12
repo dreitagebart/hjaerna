@@ -7,8 +7,8 @@ import { processWithGemini } from '../../gemini'
 import {
 	extractUrl,
 	fetchContext,
-	sanitizeFilename,
-	saveToVectorDb
+	sanitizeFilename
+	// saveToVectorDb
 } from '../../helpers'
 
 export const registerMessages = (app: App) => {
@@ -34,10 +34,12 @@ export const registerMessages = (app: App) => {
 			await say(aiResponse.message || 'Benötige mehr Infos.')
 		} else if (aiResponse.status === 'SUCCESS') {
 			// Datei schreiben
-			const filename = `${dayjs().format('YYYY-MM-DD')}-${sanitizeFilename(aiResponse.title)}.md`
+			// const filename = `${dayjs().format('YYYY-MM-DD')}-${sanitizeFilename(aiResponse.title)}.md`
+			const filename = `${aiResponse.title}.md`
 			const filepath = path.join(config.dataDir, filename)
 
 			const fileContent = `---
+title: ${aiResponse.title}
 created: ${dayjs().format('DD.MM.YYYY - HH:mm')}
 type: ${aiResponse.type}
 url: ${url || ''}
@@ -52,11 +54,11 @@ ${aiResponse.content}
 			await fsExtra.writeFile(filepath, fileContent)
 
 			// IN VEKTOR DB SCHIEBEN (Für Next.js Suche)
-			await saveToVectorDb(filename, fileContent, {
-				type: aiResponse.type,
-				title: aiResponse.title,
-				tags: aiResponse.tags?.join(',')
-			})
+			// await saveToVectorDb(filename, fileContent, {
+			// 	type: aiResponse.type,
+			// 	title: aiResponse.title,
+			// 	tags: aiResponse.tags?.join(',')
+			// })
 
 			await say(`✅ Gespeichert: *${aiResponse.title}*`)
 		}

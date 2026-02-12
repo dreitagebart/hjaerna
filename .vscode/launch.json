@@ -42,6 +42,27 @@
         "${workspaceFolder}/**",
         "!**/node_modules/**"
       ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Next.js Web App",
+      "program": "${workspaceFolder}/web/node_modules/.bin/next",
+      "args": [
+        "dev"
+      ],
+      "cwd": "${workspaceFolder}/web",
+      "envFile": "${workspaceFolder}/web/.env",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "runtimeArgs": [],
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/**",
+        "!**/node_modules/**"
+      ]
     }
   ]
 }

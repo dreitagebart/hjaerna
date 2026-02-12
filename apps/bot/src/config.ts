@@ -1,4 +1,3 @@
-import { homedir } from 'node:os'
 import { join } from 'node:path'
 import dotenv from 'dotenv'
 
@@ -10,7 +9,7 @@ dotenv.config({
 })
 
 export const config = {
-	dataDir: isDev ? join(homedir(), 'hjaerna') : '/app/brain-data',
+	dataDir: isDev ? join(process.cwd(), '../web/public/data') : '/app/data',
 	slack: {
 		// clientId: String(process.env.SLACK_CLIENT_ID),
 		// clientSecret: String(process.env.SLACK_CLIENT_SECRET),
